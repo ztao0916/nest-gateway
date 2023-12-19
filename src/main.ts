@@ -1,11 +1,13 @@
 /*
  * @Author: ztao
  * @Date: 2023-12-06 14:28:53
- * @LastEditTime: 2023-12-18 17:34:00
+ * @LastEditTime: 2023-12-19 09:47:49
  * @Description: 入口文件,通过核心函数NestFactory创建http启动器
  */
 import { NestFactory } from '@nestjs/core';
-import { VersioningType, VERSION_NEUTRAL } from '@nestjs/common';
+// import { VersioningType, VERSION_NEUTRAL } from '@nestjs/common';
+import { VersioningType } from '@nestjs/common';
+
 import {
   FastifyAdapter,
   NestFastifyApplication,

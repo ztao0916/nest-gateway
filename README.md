@@ -123,3 +123,16 @@ app.enableVersioning({
 
 #### 全局返参
 
+正常情况下,同一个系统,调用接口,返回的参数结构是一样的,大致如下
+
+```json
+{
+    data, // 数据
+    status: 0, // 接口状态值
+    extra: {}, // 拓展信息
+    message: 'success', // 异常信息
+    success：true // 接口业务返回状态
+}
+```
+
+需要使用拦截器,做个全局的请求拦截
