@@ -1,7 +1,7 @@
 /*
  * @Author: ztao
  * @Date: 2023-12-18 11:11:02
- * @LastEditTime: 2023-12-18 17:29:32
+ * @LastEditTime: 2023-12-31 00:34:34
  * @Description:
  */
 import {
@@ -12,15 +12,18 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { LoggingInterceptor } from '@/common/interceptors/logging.interceptor';
 
 // @Controller({
 //   path: 'user',
 //   version: '1',
 // })
+@UseInterceptors(LoggingInterceptor)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}

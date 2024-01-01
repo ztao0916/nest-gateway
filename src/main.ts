@@ -1,12 +1,13 @@
 /*
  * @Author: ztao
  * @Date: 2023-12-06 14:28:53
- * @LastEditTime: 2023-12-19 09:47:49
+ * @LastEditTime: 2023-12-31 00:36:20
  * @Description: 入口文件,通过核心函数NestFactory创建http启动器
  */
 import { NestFactory } from '@nestjs/core';
 // import { VersioningType, VERSION_NEUTRAL } from '@nestjs/common';
 import { VersioningType } from '@nestjs/common';
+import { TransformInterceptor } from '@/common/interceptors/transform.interceptor';
 
 import {
   FastifyAdapter,
@@ -22,6 +23,8 @@ async function bootstrap() {
 
   // 全局前缀
   // app.setGlobalPrefix('api');
+  //全局响应体格式统一处理
+  app.useGlobalInterceptors(new TransformInterceptor());
   //多版本控制
   app.enableVersioning({
     type: VersioningType.URI,
