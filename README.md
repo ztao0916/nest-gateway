@@ -154,3 +154,17 @@ app.enableVersioning({
 文档解释: 内置的异常层负责处理整个应用程序中的所有抛出的异常。当捕获到未处理的异常时，最终用户将收到友好的响应。
 ```
 
+默认异常返回如下(错误的接口地址)
+
+```json
+{
+    "message": "Cannot GET /vuser",
+    "error": "Not Found",
+    "statusCode": 404
+}
+```
+
+官方文档http异常处理文件`http-exception.filter.ts`以及`any-exception.filter.ts`
+
+**还存在一个问题: 怎么让返回的message是一个string而不是object**
+

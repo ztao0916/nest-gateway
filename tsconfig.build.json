@@ -1,3 +1,9 @@
+/*
+ * @Author: ztao
+ * @Date: 2023-12-30 11:15:45
+ * @LastEditTime: 2024-01-08 21:33:32
+ * @Description:
+ */
 {
   "extends": "./tsconfig.json",
   "exclude": ["node_modules", "test", "dist", "**/*spec.ts"]

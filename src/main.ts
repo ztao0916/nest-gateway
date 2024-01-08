@@ -1,13 +1,15 @@
 /*
  * @Author: ztao
  * @Date: 2023-12-06 14:28:53
- * @LastEditTime: 2023-12-31 00:36:20
+ * @LastEditTime: 2024-01-08 22:08:00
  * @Description: 入口文件,通过核心函数NestFactory创建http启动器
  */
 import { NestFactory } from '@nestjs/core';
 // import { VersioningType, VERSION_NEUTRAL } from '@nestjs/common';
 import { VersioningType } from '@nestjs/common';
 import { TransformInterceptor } from '@/common/interceptors/transform.interceptor';
+import { AllExceptionsFilter } from '@/common/exceptions/base.exception.filter';
+import { HttpExceptionFilter } from '@/common/exceptions/http.exception.filter';
 
 import {
   FastifyAdapter,
@@ -31,6 +33,8 @@ async function bootstrap() {
     defaultVersion: '1',
     // defaultVersion: [VERSION_NEUTRAL, '1', '2'],
   });
+  //异常过滤器
+  app.useGlobalFilters(new AllExceptionsFilter(), new HttpExceptionFilter());
 
   await app.listen(5000);
 }
