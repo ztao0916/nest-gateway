@@ -1,7 +1,7 @@
 /*
  * @Author: ztao
  * @Date: 2024-01-08 21:40:26
- * @LastEditTime: 2024-01-08 21:45:35
+ * @LastEditTime: 2024-01-09 09:35:07
  * @Description:基于官方文档any-exception.filter.ts,catch参数为空默认捕获所有异常
  */
 import { FastifyReply, FastifyRequest } from 'fastify';
@@ -11,7 +11,6 @@ import {
   Catch,
   ArgumentsHost,
   HttpStatus,
-  ServiceUnavailableException,
 } from '@nestjs/common';
 
 @Catch()
@@ -28,7 +27,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       code: HttpStatus.SERVICE_UNAVAILABLE,
       timestamp: new Date().toISOString(),
       path: request.url,
-      message: new ServiceUnavailableException().getResponse(),
+      message: exception.message,
     });
   }
 }

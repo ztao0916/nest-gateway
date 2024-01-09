@@ -168,3 +168,11 @@ app.enableVersioning({
 
 **还存在一个问题: 怎么让返回的message是一个string而不是object**
 
+```
+已解决,直接从exception对象中拿到message即可,即是exception.message
+```
+
+
+
+#### 环境变量
+
