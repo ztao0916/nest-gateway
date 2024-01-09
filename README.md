@@ -176,3 +176,159 @@ app.enableVersioning({
 
 #### 环境变量
 
+看了一些文章,发现这里用yaml最好,没啥需要注意的方面
+
+安装包`pnpm i @nestjs/config`,官方文档搜索`@nestjs/config`即可查找相关内容
+
+更改`app.module.ts`,基于`@nestjs/config`引入`configModule`,更新后的代码如下
+
+```typescript
+import { Module } from '@nestjs/common';
+import { UserModule } from './user/user.module';
+import { ConfigModule } from '@nestjs/config';
+//禁用默认读取 .env 的规则
+@Module({
+  imports: [ConfigModule.forRoot({ ignoreEnvFile: true }), UserModule],
+  controllers: [],
+  providers: [],
+})
+export class AppModule {}
+```
+
+安装包`pnpm install yaml`,在根目录新建`.config`文件夹,新增文件`.dev.yaml`,`.prod.yaml`,`.test.yaml`,用哪些建那些,开发基本上只能用到dev和prod环境
+
+在`src`目录下新建`utils/index.ts`,用来读取`yaml`文件,文件内容如下
+
+```typescript
+import { parse } from 'yaml';
+import * as path from 'path';
+import * as fs from 'fs';
+//获取到当前环境[运行环境的时候需要添加变量RUN_ENV]
+export const getEnv = () => {
+  return process.env.RUN_ENV;
+};
+//根据当前环境读取环境配置
+export const getConfig = () => {
+  const environment = getEnv(); //获取到当前环境
+  //根据当前环境匹配对应文件
+  const yamlPath = path.join(process.cwd(), `./.config/.${environment}.yaml`);
+  //获取到当前文件内容并导出
+  const file = fs.readFileSync(yamlPath, 'utf8');
+  const config = parse(file);
+  return config;
+};
+```
+
+其中`process.cwd()`需要关注一下,因为暂时不理解
+
+以上内容完成后,更改`app.module.ts`文件,更改后结果如下
+
+```typescript
+import { Module } from '@nestjs/common';
+import { UserModule } from '@/user/user.module';
+import { ConfigModule } from '@nestjs/config';
+import { getConfig } from '@/utils';
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      ignoreEnvFile: true,
+      isGlobal: true,
+      load: [getConfig],
+    }),
+    UserModule,
+  ],
+  controllers: [],
+  providers: [],
+})
+export class AppModule {}
+```
+
+最后要注意一下: 我们在读取yaml的时候,是根据`process.env.RUN_ENV`来获取当前环境的,所以需要更改`package.json`内的运行命令
+
+安装包`pnpm install cross-env`
+
+修改启动命令,原命令如下
+
+```
+"start:dev": "nest start --watch",
+```
+
+新命令如下
+
+```
+"start:dev": "cross-env RUN_ENV=dev nest start --watch",
+```
+
+相当于在原来的命令前面增加`cross-env`参数即可
+
+然后使用如下:
+
+在`.dev.yaml`中添加内容如下:
+
+```yaml
+TEST_VALUE:
+  name: cookie
+```
+
+然后再`user.controller.ts`中新增内容,文件最后结果如下
+
+```typescript
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseInterceptors,
+} from '@nestjs/common';
+import { UserService } from './user.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { LoggingInterceptor } from '@/common/interceptors/logging.interceptor';
+import { ConfigService } from '@nestjs/config'; //新增内容
+
+@UseInterceptors(LoggingInterceptor)
+@Controller('user')
+export class UserController {
+  constructor(
+    private readonly userService: UserService,
+    private readonly configService: ConfigService, //环境变量参数
+  ) {}
+
+  @Post()
+  create(@Body() createUserDto: CreateUserDto) {
+    return this.userService.create(createUserDto);
+  }
+
+  @Get()
+  findAll() {
+    return this.userService.findAll();
+  }
+
+  @Get('getTestName') //测试环境变量请求
+  getTestName() {
+    return this.configService.get('TEST_VALUE').name;
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.userService.findOne(+id);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.userService.update(+id, updateUserDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.userService.remove(+id);
+  }
+}
+```
+
+接口调用`v1/user/getTestName`,测试成功
+
+至此,环境变量配置完成,前期的基本工作都完成了

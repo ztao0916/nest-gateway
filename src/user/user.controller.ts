@@ -1,7 +1,7 @@
 /*
  * @Author: ztao
  * @Date: 2023-12-18 11:11:02
- * @LastEditTime: 2023-12-31 00:34:34
+ * @LastEditTime: 2024-01-09 23:43:47
  * @Description:
  */
 import {
@@ -18,15 +18,15 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoggingInterceptor } from '@/common/interceptors/logging.interceptor';
+import { ConfigService } from '@nestjs/config'; //新增内容
 
-// @Controller({
-//   path: 'user',
-//   version: '1',
-// })
 @UseInterceptors(LoggingInterceptor)
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly configService: ConfigService, //环境变量参数
+  ) {}
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
@@ -36,6 +36,11 @@ export class UserController {
   @Get()
   findAll() {
     return this.userService.findAll();
+  }
+
+  @Get('getEnv') //测试环境变量请求
+  getTestName() {
+    return this.configService.get('TEST_VALUE').name;
   }
 
   @Get(':id')

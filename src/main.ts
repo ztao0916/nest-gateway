@@ -1,7 +1,7 @@
 /*
  * @Author: ztao
  * @Date: 2023-12-06 14:28:53
- * @LastEditTime: 2024-01-08 22:08:00
+ * @LastEditTime: 2024-01-09 20:58:06
  * @Description: 入口文件,通过核心函数NestFactory创建http启动器
  */
 import { NestFactory } from '@nestjs/core';
