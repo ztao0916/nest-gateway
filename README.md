@@ -331,4 +331,30 @@ export class UserController {
 
 接口调用`v1/user/getTestName`,测试成功
 
+细节点: `configService`没有注册`configModule`就直接使用了,原因如下
+
+```
+这里应该注意到，我们并没有注册 ConfigModule。这是因为在 app.module 中添加 isGlobal 属性，开启 Config 全局注册，如果 isGlobal 没有添加的话，则需要先在对应的 module 文件中注册后才能正常使用 ConfigService。
+```
+
+简单理解就是`isGlobal`假设没有添加,那么需要再`user.module.ts`中注册一遍,也不麻烦,不过每次在对应的模块使用都要注册
+
+```typescript
+import { Module } from '@nestjs/common';
+import { UserService } from './user.service';
+import { UserController } from './user.controller';
+import { ConfigService } from '@nestjs/config'; //新增内容
+@Module({
+  controllers: [UserController],
+  providers: [UserService, ConfigService],
+})
+export class UserModule {}
+```
+
+
+
+
+
+
+
 至此,环境变量配置完成,前期的基本工作都完成了
