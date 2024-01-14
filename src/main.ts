@@ -1,7 +1,7 @@
 /*
  * @Author: ztao
  * @Date: 2023-12-06 14:28:53
- * @LastEditTime: 2024-01-14 12:44:07
+ * @LastEditTime: 2024-01-14 16:12:16
  * @Description: 入口文件,通过核心函数NestFactory创建http启动器
  */
 import { NestFactory } from '@nestjs/core'; //引入核心函数NestFactory
@@ -16,6 +16,8 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify'; //引入fastify依赖,处理fastify启动器
 import { AppModule } from './app.module'; //引入根模块
+
+declare const module: any;
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -45,6 +47,12 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
+
+  //HMR热重载
+  if (module.hot) {
+    module.hot.accept();
+    module.hot.dispose(() => app.close());
+  }
 
   await app.listen(5000);
 }

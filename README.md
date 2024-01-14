@@ -35,7 +35,7 @@ pnpm版本:  8.6
 
 ![](https://cdn.jsdelivr.net/gh/ztao0916/image@main/img/20231206142458.webp)
 
-### 开始(公共模块)
+### 开始(通用模板)
 
 #### 脚手架
 
@@ -385,6 +385,44 @@ bootstrap();
 ```
 
 如何使用和定义文档,看文档,很多都是通用的,主要是基于装饰器`ApiProperty`
+
+#### 热重载
+
+本来是觉得这个模块用处不大,但是更改接口的时候发现,有时候响应不及时,需要重启,所以还是加上了,基本上完全按照文档的来就可以解决问题
+
+安装依赖`pnpm i --save-dev webpack-node-externals run-script-webpack-plugin webpack `
+
+根目录下创建文件`webpack-hmr.config.js`
+
+更改`main.ts`,代码如下
+
+```typescript
+declare const module: any;
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  await app.listen(3000);
+
+  if (module.hot) {
+    module.hot.accept();
+    module.hot.dispose(() => app.close());
+  }
+}
+bootstrap();
+
+```
+
+修改启动脚本启动命令
+
+```yaml
+"start:hotdev": "cross-env RUNNING_ENV=dev nest build --webpack --webpackPath webpack-hmr.config.js --watch"
+```
+
+
+
+以上基本上就是一个完成**通用性基础配置**的工程模板,满足大部分的个人项目需求了
+
+
 
 
 
