@@ -353,8 +353,38 @@ export class UserModule {}
 
 
 
+#### 接口文档
+
+官方文档直接搜索`swagger`即可,有详细用法,这里采用官方文档的用法
+
+安装依赖`pnpm install @nestjs/swagger `和`pnpm install @fastify/static`
+
+在main.ts中引入相关逻辑,官方代码如下
+
+```typescript
+import { NestFactory } from '@nestjs/core';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { ApplicationModule } from './app.module';
+
+async function bootstrap() {
+  const app = await NestFactory.create(ApplicationModule);
+
+  const options = new DocumentBuilder()
+    .setTitle('Cats example')
+    .setDescription('The cats API description')
+    .setVersion('1.0')
+    .addTag('cats')
+    .build();
+  const document = SwaggerModule.createDocument(app, options);
+  SwaggerModule.setup('api', app, document);
+
+  await app.listen(3000);
+}
+bootstrap();
+
+```
+
+如何使用和定义文档,看文档,很多都是通用的,主要是基于装饰器`ApiProperty`
 
 
 
-
-至此,环境变量配置完成,前期的基本工作都完成了
