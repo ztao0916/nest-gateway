@@ -4,7 +4,9 @@
  * @LastEditTime: 2024-01-14 16:07:40
  * @Description: 热重载模块
  */
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const nodeExternals = require('webpack-node-externals');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { RunScriptWebpackPlugin } = require('run-script-webpack-plugin');
 
 module.exports = function (options, webpack) {
