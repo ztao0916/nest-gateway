@@ -1,7 +1,7 @@
 /*
  * @Author: ztao
  * @Date: 2024-01-08 21:40:26
- * @LastEditTime: 2024-01-09 09:35:07
+ * @LastEditTime: 2024-01-18 17:52:17
  * @Description:基于官方文档any-exception.filter.ts,catch参数为空默认捕获所有异常
  */
 import { FastifyReply, FastifyRequest } from 'fastify';
@@ -25,7 +25,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
     // 非 HTTP 标准异常的处理。
     response.status(HttpStatus.SERVICE_UNAVAILABLE).send({
       code: HttpStatus.SERVICE_UNAVAILABLE,
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toLocaleString('zh-CN', {
+        timeZone: 'Asia/Shanghai',
+      }),
       path: request.url,
       message: exception.message,
     });
