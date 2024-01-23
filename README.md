@@ -1,6 +1,10 @@
 # nest-gateway
 掘金教程: nest项目实战学习笔记
 
+```
+官方文档的资料是很全面的,很多写法都是固定的,跟着官方文档走即可,所以没事多翻翻,中文为主,英文为辅
+```
+
 ### 准备工作
 
 #### 版本信息
@@ -427,4 +431,114 @@ bootstrap();
 ### 飞书对接
 
 有个API调试台,接口可以在那边调试,其他的按步骤来即可
+
+这里涉及到一个缓存的问题,这篇讨论:[传送门](https://www.zhihu.com/question/316430245),整体分析了一下使用内存和第三方数据库的优缺点,个人比较倾向于第三方数据库,比如redis,大致简单理解一下,原因如下:
+
+1. 本地缓存资源浪费,比如想在缓存一份数据,ABC三个服务器都要缓存
+2. 本地缓存内存一致性问题,受版本,还是有不同人修改的影响,导致不同服务器缓存不一致
+3. 内存有限,如果数据太多,那么对于内存不大的服务器而已,负担很重,而且服务器出现故障以后,缓存消失
+4. 多项目共用的问题,本地缓存在多项目复用的时候限制较高,A无法访问B的缓存
+
+#### 封装底层请求库
+
+简单理解: 为什么要封装?
+
+`NestJS` 内置了 `@nestjs/axios` 请求库,但是依然要封装? 一方面是为了减少和`nestjs`的耦合,另一方面是为了模块化开发,便于其他`SDK`调用
+
+不要安装`@nestjs/axios`依赖包,直接安装`axios`
+
+```yaml
+pnpm install axios
+```
+
+新建 `utils/request.ts` 文件,内容如下,**这里一知半解,先继续学习,回头仔细思考**
+
+```typescript
+import axios, { Method } from 'axios';
+import { getConfig } from '@/utils';
+
+const { FEISHU_CONFIG: { FEISHU_URL } } = getConfig()
+
+/**
+ * @description: 任意请求
+ */
+const request = async ({ url, option = {} }) => {
+  try {
+    return axios.request({
+      url,
+      ...option,
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+interface IMethodV {
+  url: string;
+  method?: Method;
+  headers?: { [key: string]: string };
+  params?: Record<string, unknown>;
+  query?: Record<string, unknown>;
+}
+
+export interface IRequest {
+  data: any;
+  code: number;
+}
+
+/**
+ * @description: 带 version 的通用 api 请求
+ */
+const methodV = async ({
+  url,
+  method,
+  headers,
+  params = {},
+  query = {},
+}: IMethodV): Promise<IRequest> => {
+  let sendUrl = '';
+  if (/^(http:\/\/|https:\/\/)/.test(url)) {
+    sendUrl = url;
+  } else {
+    sendUrl = `${FEISHU_URL}${url}`;
+  }
+  try {
+    return new Promise((resolve, reject) => {
+      axios({
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          ...headers,
+        },
+        url: sendUrl,
+        method,
+        params: query,
+        data: {
+          ...params,
+        },
+      })
+        .then(({ data, status }) => {
+          resolve({ data, code: status });
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export { request, methodV };
+
+```
+
+
+
+创建飞书请求基础层,目录结构如下图(红框部分)
+
+![](https://cdn.jsdelivr.net/gh/ztao0916/image@main/img/202401232236852.png)
+
+
+
+
 
