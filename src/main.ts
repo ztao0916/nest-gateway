@@ -1,7 +1,7 @@
 /*
  * @Author: ztao
  * @Date: 2023-12-06 14:28:53
- * @LastEditTime: 2024-01-14 16:12:16
+ * @LastEditTime: 2024-01-28 21:25:30
  * @Description: 入口文件,通过核心函数NestFactory创建http启动器
  */
 import { NestFactory } from '@nestjs/core'; //引入核心函数NestFactory
@@ -24,6 +24,8 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter(),
   );
+
+  console.log('process.env', process.env);
 
   // 全局前缀
   // app.setGlobalPrefix('api');
@@ -54,6 +56,6 @@ async function bootstrap() {
     module.hot.dispose(() => app.close());
   }
 
-  await app.listen(5000);
+  await app.listen(8000);
 }
 bootstrap();

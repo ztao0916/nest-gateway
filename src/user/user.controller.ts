@@ -40,7 +40,7 @@ export class UserController {
 
   @Get('getEnv') //测试环境变量请求
   getTestName() {
-    return this.configService.get('TEST_VALUE').name;
+    return this.configService.get<string>('NODE_ENV');
   }
 
   @Get(':id')
