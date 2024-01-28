@@ -1,16 +1,13 @@
 /*
  * @Author: ztao
  * @Date: 2024-01-23 22:14:13
- * @LastEditTime: 2024-01-23 22:32:35
+ * @LastEditTime: 2024-01-28 22:26:42
  * @Description: 封装请求
  */
 import axios, { Method } from 'axios';
-import { getConfig } from '@/utils';
 
 //获取飞书配置信息
-const {
-  FEISHU_CONFIG: { FEISHU_URL },
-} = getConfig();
+const FEISHU_URL = process.env.FEISHU_URL;
 
 //封装任意请求
 const request = async ({ url, option = {} }) => {

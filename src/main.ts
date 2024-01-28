@@ -24,9 +24,6 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter(),
   );
-
-  console.log('process.env', process.env);
-
   // 全局前缀
   // app.setGlobalPrefix('api');
   //全局响应体格式统一处理
@@ -56,6 +53,6 @@ async function bootstrap() {
     module.hot.dispose(() => app.close());
   }
 
-  await app.listen(8000);
+  await app.listen(process.env.PORT);
 }
 bootstrap();
